@@ -1,0 +1,10 @@
+{
+  "hosted-zone:account=625103424736:domainName=quangdel.com:region=eu-north-1": {
+    "Id": "/hostedzone/Z016271937CY2USYW1RKR",
+    "Name": "quangdel.com."
+  },
+  "hosted-zone:account=625103424736:domainName=quangdel.com:region=us-east-1": {
+    "Id": "/hostedzone/Z016271937CY2USYW1RKR",
+    "Name": "quangdel.com."
+  }
+}
