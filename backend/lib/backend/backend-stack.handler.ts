@@ -8,7 +8,9 @@ import Joi from 'joi';
 // Initialize the Express application
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ['paste.quangdel.com'],
+}));
 
 // DynamoDB
 const dynamoDb = new DynamoDB.DocumentClient();
