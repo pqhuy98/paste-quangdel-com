@@ -65,6 +65,8 @@ app.post('/paste', async (req, res) => {
     Item: { id, content, ttl: ttl || Math.floor(Date.now() / 1000 + DEFAULT_TTL_SEC) },
   }).promise();
 
+  console.log('Create paste', { id, content, ttl });
+
   return res.json({ id: `${id}` });
 });
 
@@ -74,6 +76,8 @@ app.get('/paste/:id', async (req, res) => {
     TableName: tableName,
     Key: { id },
   }).promise();
+
+  console.log('Read paste', { id });
 
   if (result.Item) {
     res.json(result.Item);

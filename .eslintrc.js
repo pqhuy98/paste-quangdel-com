@@ -34,6 +34,7 @@ module.exports = {
     ],
     "no-underscore-dangle": "off",
     "no-new": "off",
+    "no-console": "off",
     "@typescript-eslint/no-misused-promises": [
       "error",
       {

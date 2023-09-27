@@ -77,7 +77,7 @@ const ReadPaste: React.FC = () => {
 
   return (
     <div className="container">
-      <h1>Paste "{id}"</h1>
+      <h1>Paste "{id}":</h1>
       {paste && <pre>{paste.content}</pre>}
       {!paste && (
         error.length === 0 ? <p>Loading...</p> : <p style={{ color: "red" }}>{error}</p>
