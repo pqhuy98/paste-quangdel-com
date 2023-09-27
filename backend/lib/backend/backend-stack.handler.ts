@@ -9,7 +9,7 @@ import Joi from 'joi';
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: ['paste.quangdel.com'],
+  origin: ['https://paste.quangdel.com', 'http://localhost:3000'],
 }));
 
 // DynamoDB

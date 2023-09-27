@@ -2,7 +2,6 @@
   max-width: 800px;
   margin: auto;
   padding: 20px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 h1 {
@@ -16,6 +15,7 @@ textarea {
   margin-bottom: 20px;
   padding: 10px;
   border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 button {
@@ -24,31 +24,11 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 button:hover {
   background-color: #0056b3;
-}
-
-nav ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 40px;
-}
-
-nav ul li {
-  margin: 0 15px;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-nav ul li a:hover {
-  text-decoration: underline;
 }
 
 pre {

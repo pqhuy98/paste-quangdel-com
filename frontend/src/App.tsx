@@ -7,6 +7,7 @@ import {
   useParams
 } from 'react-router-dom';
 import axios from 'axios';
+import "./App.css"
 
 const BACKEND_URL = "https://api.paste.quangdel.com"
 
@@ -14,6 +15,7 @@ const CreatePaste: React.FC = () => {
   const [content, setContent] = useState('');
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
+  const [creating, setCreating] = useState(false)
 
   const createPaste = async () => {
     if (content.length <= 0) {
@@ -22,12 +24,15 @@ const CreatePaste: React.FC = () => {
     }
 
     try {
+      setCreating(true)
       const { data } = await axios.post(`${BACKEND_URL}/paste`, { content });
       setUrl("/" + data.id);
       setError("")
+      setCreating(false)
     } catch (err: any) {
       console.error('Error creating paste:', error);
-      setError(err.response.status + " " + JSON.stringify(err.response.data))
+      setError(err.response?.status + " " + JSON.stringify(err.response?.data))
+      setCreating(false)
     }
   };
 
@@ -40,7 +45,7 @@ const CreatePaste: React.FC = () => {
         />
       </div>
       <div>
-        <button onClick={createPaste}>Create</button>
+        <button disabled={creating} onClick={createPaste}> {creating ? "Creating..." : "Create"}</button>
       </div>
       {url && <p>Created! <Link to={url}>{url}</Link></p>}
       {error.length > 0 && <p style={{ color: "red" }}>{error}</p>}
@@ -61,7 +66,7 @@ const ReadPaste: React.FC = () => {
       setError("")
     } catch (err: any) {
       console.error('Error fetching paste:', error);
-      setError(err.response.status + " " + JSON.stringify(err.response.data))
+      setError(err.response?.status + " " + JSON.stringify(err.response?.data))
     }
   };
 
