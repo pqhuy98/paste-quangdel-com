@@ -10,8 +10,8 @@ import {
 import axios from 'axios';
 import "./App.css"
 
-// const BACKEND_URL = "https://api.paste.quangdel.com"
-const BACKEND_URL = "http://localhost:8080"
+const BACKEND_URL = "https://api.paste.quangdel.com"
+// const BACKEND_URL = "http://localhost:8080"
 const MAX_FILE_SIZE_MB = 100;  // Convert to bytes
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;  // Convert to bytes
 

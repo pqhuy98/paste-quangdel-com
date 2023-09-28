@@ -1,4 +1,6 @@
-import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import {
+ Duration, RemovalPolicy, Stack, StackProps 
+} from 'aws-cdk-lib';
 import {
   RestApi, LambdaIntegration, SecurityPolicy,
 } from 'aws-cdk-lib/aws-apigateway';
@@ -17,7 +19,9 @@ export class BackendStack extends Stack {
     const api = new RestApi(this, BACKEND_API_DOMAIN_NAME, {});
 
     // Lambda handler for /*
-    const backendLambda = new NodejsFunction(this, 'handler', {});
+    const backendLambda = new NodejsFunction(this, 'handler', {
+      timeout: Duration.seconds(5),
+    });
     api.root
       .addResource('{proxy+}')
       .addMethod('ANY', new LambdaIntegration(backendLambda));
