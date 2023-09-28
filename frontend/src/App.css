@@ -36,3 +36,6 @@ pre {
   padding: 20px;
   border-radius: 4px;
 }
+input {
+  margin-bottom: 20px;
+}

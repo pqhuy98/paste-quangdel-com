@@ -1,4 +1,4 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import {
   RestApi, LambdaIntegration, SecurityPolicy,
 } from 'aws-cdk-lib/aws-apigateway';
@@ -8,6 +8,7 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { ApiGateway } from 'aws-cdk-lib/aws-route53-targets';
 import { Construct } from 'constructs';
+import { Bucket, BucketAccessControl } from 'aws-cdk-lib/aws-s3';
 import { BACKEND_API_DOMAIN_NAME } from '../common';
 
 export class BackendStack extends Stack {
@@ -45,5 +46,20 @@ export class BackendStack extends Stack {
       timeToLiveAttribute: 'ttl',
     });
     table.grantReadWriteData(backendLambda);
+
+    // File Upload S3 bucket
+    const uploadS3Bucket = new Bucket(this, 'UploadBucket', {
+      bucketName: 'paste.quangdel.com-uploads',
+      removalPolicy: RemovalPolicy.DESTROY,
+      blockPublicAccess: {
+        blockPublicAcls: false,
+        blockPublicPolicy: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
+      },
+      accessControl: BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+    });
+    uploadS3Bucket.grantReadWrite(backendLambda);
+    uploadS3Bucket.grantPublicAccess();
   }
 }

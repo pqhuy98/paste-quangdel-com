@@ -35,6 +35,8 @@ module.exports = {
     "no-underscore-dangle": "off",
     "no-new": "off",
     "no-console": "off",
+    "no-await-in-loop": "off",
+    "no-restricted-syntax": "off",
     "@typescript-eslint/no-misused-promises": [
       "error",
       {
