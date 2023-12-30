@@ -12,7 +12,7 @@ import "./App.css"
 
 const BACKEND_URL = "https://api.paste.quangdel.com"
 // const BACKEND_URL = "http://localhost:8080"
-const MAX_FILE_SIZE_MB = 100;  // Convert to bytes
+const MAX_FILE_SIZE_MB = 500;  // Convert to bytes
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;  // Convert to bytes
 
 const CreatePaste: React.FC = () => {
@@ -31,27 +31,41 @@ const CreatePaste: React.FC = () => {
     const formData = new FormData();
     formData.append("content", content);
 
+    const fileArray: File[] = []
     if (files) {
-      // Check file size
       for (let i = 0; i < files.length; i++) {
         if (files[i].size > MAX_FILE_SIZE_BYTES) {
           setError(`File "${files[i].name}" exceeds ${MAX_FILE_SIZE_MB} MB!`)
           return;
         }
       }
-
       for (let i = 0; i < files.length; i++) {
-        formData.append("files", files[i]);
+        fileArray.push(files[i])
       }
     }
 
+    const filesRequests = fileArray.map((file, i) => ({
+      clientId: `${i}`,
+      originalName: file.name,
+    }))
+
     try {
       setCreating(true)
-      const { data } = await axios.post(`${BACKEND_URL}/paste`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const { data } = await axios.post(`${BACKEND_URL}/paste`, {
+        content,
+        files: filesRequests
       });
+      for (let i = 0; i < data.fileUploadPresigned.length; i++) {
+        const presignedData = data.fileUploadPresigned[i].data;
+        const formData = new FormData();
+        Object.entries(presignedData.fields).forEach(([k, v]) => {
+          formData.append(k, v as any);
+        });
+        formData.append("file", fileArray[i]); // must be the last one
+
+        // upload file[i] to S3 using presigned URL
+        await axios.post(presignedData.url, formData);
+      }
       navigate("/" + data.id);
     } catch (err: any) {
       console.error('Error creating paste:', error);
@@ -92,7 +106,6 @@ const ReadPaste: React.FC = () => {
   const [error, setError] = useState('');
 
   const fetchPaste = async () => {
-    console.log({ id })
     try {
       const { data } = await axios.get(`${BACKEND_URL}/paste/${id}`);
       setPaste(data);

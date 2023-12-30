@@ -8,7 +8,7 @@ import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
-import { FRONTEND_DOMAIN_NAME } from '../common';
+import { FRONTEND_DOMAIN_NAME, FRONTEND_S3_BUCKET_NAME, ROOT_DOMAIN_NAME } from '../../src/common';
 
 export class FrontendStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -18,7 +18,7 @@ export class FrontendStack extends Stack {
 
     // Create S3 bucket
     const websiteBucket = new Bucket(this, 'WebsiteBucket', {
-      bucketName: 'paste.quangdel.com-frontend',
+      bucketName: FRONTEND_S3_BUCKET_NAME,
       websiteIndexDocument: 'index.html',
       websiteErrorDocument: 'index.html',
       removalPolicy: RemovalPolicy.DESTROY,
@@ -28,7 +28,7 @@ export class FrontendStack extends Stack {
     websiteBucket.grantRead(originAccessIdentity);
 
     // TLS certificate
-    const hostedZone = HostedZone.fromLookup(this, 'Zone', { domainName: 'quangdel.com' });
+    const hostedZone = HostedZone.fromLookup(this, 'Zone', { domainName: ROOT_DOMAIN_NAME });
     const cert = new DnsValidatedCertificate(this, 'SiteCertificate', {
       domainName,
       hostedZone,
@@ -74,7 +74,7 @@ export class FrontendStack extends Stack {
     });
 
     // Domain name DNS record
-    const _aRecord = new ARecord(this, 'SiteAliasRecord', {
+    new ARecord(this, 'SiteAliasRecord', {
       recordName: domainName,
       target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
       zone: hostedZone,
