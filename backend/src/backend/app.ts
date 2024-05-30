@@ -19,7 +19,7 @@ let defaultLength = 3;
 // Initialize S3 client
 const s3 = new S3();
 
-const CHARACTERS = 'abcdefghijklmnopqrstuvwxyz0123456789';
+const CHARACTERS = 'abcdefghjkmnpqrstuvwxyz123456789';
 async function generateId(length: number = defaultLength, retries: number = 3): Promise<string> {
   for (let i = 0; i < retries; i += 1) {
     let id = '';
@@ -47,18 +47,16 @@ interface PostPasteBody {
     clientId: string
     originalName: string
   }[]
-  ttl?: number
+  ttlSecond?: number
 }
 const schemaPostPasteBody = Joi.object<PostPasteBody>({
-  content: Joi.string().min(1).max(999999).required(),
+  content: Joi.string().min(0).max(999999).required(),
   files: Joi.array().items({
     clientId: Joi.string().required(),
     originalName: Joi.string().required(),
   }).optional(),
-  ttl: Joi.number().min(Math.floor(Date.now() / 1000)).optional(),
+  ttlSecond: Joi.number().min(0).optional(),
 });
-
-const DEFAULT_TTL_SEC = 5 * 60;
 
 app.post('/paste', async (req, res) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -68,7 +66,7 @@ app.post('/paste', async (req, res) => {
     return res.status(400).json({ error });
   }
 
-  const { content, ttl, files } = value;
+  const { content, ttlSecond, files } = value;
   const id = await generateId(3);
 
   // Handle multiple file uploads
@@ -111,12 +109,12 @@ app.post('/paste', async (req, res) => {
     Item: {
       id,
       content,
-      ttl: ttl || Math.floor(Date.now() / 1000 + DEFAULT_TTL_SEC),
+      ttl: ttlSecond !== undefined ? Math.floor(Date.now() / 1000 + ttlSecond) : undefined,
       uploadedFiles,
     },
   }).promise();
 
-  console.log('Created paste', { id, ttl });
+  console.log('Created paste', { id, ttlSecond });
   return res.json({
     id: `${id}`,
     fileUploadPresigned,
@@ -132,7 +130,7 @@ app.get('/paste/:id', async (req, res) => {
 
   console.log('Read paste', { id });
 
-  if (result.Item) {
+  if (result.Item && !(result.Item["ttl"] != null && result.Item["ttl"] <= Math.floor(Date.now() / 1000))) {
     res.json(result.Item);
   } else {
     res.status(404).json({ error: 'Not found' });

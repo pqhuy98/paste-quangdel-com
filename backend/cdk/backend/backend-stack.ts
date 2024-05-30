@@ -5,7 +5,7 @@ import {
   RestApi, LambdaIntegration, SecurityPolicy,
 } from 'aws-cdk-lib/aws-apigateway';
 import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
-import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { ApiGateway } from 'aws-cdk-lib/aws-route53-targets';
@@ -51,6 +51,7 @@ export class BackendStack extends Stack {
       partitionKey: { name: 'id', type: AttributeType.STRING },
       tableName: DYNAMODB_TABLE_NAME,
       timeToLiveAttribute: 'ttl',
+      billingMode: BillingMode.PAY_PER_REQUEST
     });
     table.grantReadWriteData(backendLambda);
 
